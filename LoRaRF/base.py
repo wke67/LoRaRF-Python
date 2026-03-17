@@ -34,36 +34,44 @@ class LoRaGpio:
         self.chip = "/dev/gpiochip" + str(chip)
         self.offset = offset
         self.seqno = 0
+        self.request = None
 
     def output(self, value: Value):
-        with gpiod.request_lines(
-            self.chip,
-            consumer="LoRaGpio",
-            config={self.offset: gpiod.LineSettings(direction=Direction.OUTPUT)}
-        ) as request:
-            request.set_value(self.offset, value)
+        if self.request is None:
+            self.request = gpiod.request_lines(
+                self.chip,
+                consumer="LoRaGpio",
+                config={self.offset: gpiod.LineSettings(direction=Direction.OUTPUT)}
+            )
+        self.request.set_value(self.offset, value)
 
     def input(self):
-        with gpiod.request_lines(
-            self.chip,
-            consumer="LoRaGpio",
-            config={self.offset: gpiod.LineSettings(direction=Direction.INPUT)}
-        ) as request:
-            return request.get_value(self.offset)
+        if self.request is None:
+            self.request = gpiod.request_lines(
+                self.chip,
+                consumer="LoRaGpio",
+                config={self.offset: gpiod.LineSettings(direction=Direction.INPUT)}
+            )
+        return self.request.get_value(self.offset)
 
     def monitor(self, callback, timeout: float):
         t = time.time()
-        with gpiod.request_lines(
-            self.chip,
-            consumer="LoRaGpio",
-            config={self.offset: gpiod.LineSettings(edge_detection=Edge.RISING)}
-        ) as request:
-            while (time.time() - t) < timeout or timeout == 0:
-                for event in request.read_edge_events():
-                    if event.line_seqno != self.seqno:
-                        self.seqno = event.line_seqno
-                        callback()
-                        return
+        if self.request is None:
+            self.request = gpiod.request_lines(
+                self.chip,
+                consumer="LoRaGpio",
+                config={self.offset: gpiod.LineSettings(edge_detection=Edge.RISING)}
+            )
+        while (time.time() - t) < timeout or timeout == 0:
+            for event in self.request.read_edge_events():
+                if event.line_seqno != self.seqno:
+                    self.seqno = event.line_seqno
+                    callback()
+                    return
+
+    def monitor_continuous(self, callback, timeout: float):
+        while True:
+            self.monitor(callback, timeout)
 
 
 class BaseLoRa :
