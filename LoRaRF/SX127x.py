@@ -803,9 +803,9 @@ class SX127x(BaseLoRa) :
     def _transfer(self, address: int, data: int) -> int :
 
         buf = [address, data]
-        self._cs.output(LoRaGpio.LOW)
+        if self._cs is not None: self._cs.output(LoRaGpio.LOW)
         feedback = self._spi.transfer(buf)
-        self._cs.output(LoRaGpio.HIGH)
+        if self._cs is not None: self._cs.output(LoRaGpio.HIGH)
         if (len(feedback) == 2) :
             return int(feedback[1])
         return -1
