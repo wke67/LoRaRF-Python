@@ -203,5 +203,5 @@ See examples for [SX126x](https://github.com/chandrawi/LoRaRF-Python/tree/main/e
 
 [Chandra Wijaya Sentosa](https://github.com/chandrawi) <<chandra.w.sentosa@gmail.com>>
 
-### Upcoming features...
-Base class will allow for python3-libgpiod package
+### New features...
+Base class supports python3-libgpiod package, no longer compatible to libgpiod < 2.0
