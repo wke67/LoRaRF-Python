@@ -13,6 +13,7 @@ This readme is written for quick start guide. Visit this [link](https://github.c
 
 Theoritically all LoRa modules using SX126x series (SX1261, SX1262, SX1268), SX127x series (SX1272, SX1276, SX1277, SX1278, SX1279), or LLCC68 will compatible using this library. Some LoRa module which already tested and confirmed compatible are:
 * Ebyte: E22-400M22S, E22-900M22S, E22-400M30S, E22-900M30S
+* generic RFM 95 
 
 Currently only Raspberry pi zero, zero W, 3A, 3B, 3B+, 4A, and 4B supported as host controller. Support for other single board computer will be added in the future. The Linux distro already tested using this library are:
 * Raspberry pi OS
@@ -51,16 +52,22 @@ pip install LoRaRF
 
 ## Initialization
 
-To work with the library, first you must import `SX126x` or `SX127x` python module depending LoRa module you use. Then initialize the module by creating an object.
+To work with the library, first you must import `SX126x` or `SX127x` depending LoRa module you use and the LoRaSpi and LoRaGpio. Before the module initialization, you need to create the SPI, RESET, CS pin objects. Then initialize the module by creating an object.
 
 ```python
+from LoRaRF import LoRaSpi, LoRaGpio
+spi = LoRaSpi(1, 0)    # /dev/spidev1.0
+cs = LoRaGpio(1, 8)    # /dev/gpiochp1 line #8
+reset = LoRaGpio(1, 2) # /dev/gpiochp1 line #2
+...
+
 # for SX126x series or LLCC68
 from LoRaRF import SX126x
-LoRa = SX126x()
+LoRa = SX126x(spi, cs, reset, irq: Optional[LoRaGpio]=None, txen: Optional[LoRaGpio]=None, rxen: Optional[LoRaGpio]=None)
 
 # for SX127x series
 from LoRaRF import SX127x
-LoRa = SX127x()
+LoRa = SX127x(spi, cs, reset, irq: Optional[LoRaGpio]=None, txen: Optional[LoRaGpio]=None, rxen: Optional[LoRaGpio]=None)
 ```
 
 Before calling any configuration methods, doing transmit or receive operation you must call `begin()` method.
@@ -93,21 +100,16 @@ The default SPI port is using bus id 0 and cs id 0. The default GPIO pins used f
 
 ### SPI Port Configuration
 
-To configure SPI port or SPI frequency call `setSPI()` method before `begin()` method.
+To configure SPI port or SPI frequency call `setSPI()` method.
 ```python
-# set to use SPI with bus id 0 and cs id 1 and speed 7.8 Mhz
-LoRa.setSPI(0, 0, 7800000)
-LoRa.begin()
+# set to use SPI speed 7.8 Mhz
+LoRa.setSPI(7800000)
 ```
 
 ### I/O Pins Configuration
 
-To configure I/O pins (NSS, RESET, BUSY, IRQ, TXEN, RXEN pin) call `setPins()` before `begin()` method.
-```python
-# set RESET->22, BUSY->23, DIO1->26, TXEN->5, RXEN->25
-LoRa.setPins(22, 23, 26, 5, 25)
-LoRa.begin()
-```
+Other I/O pins (NSS, RESET, BUSY, IRQ, TXEN, RXEN pin) need to be created before the creation of the SX12xy object. 
+
 
 ## Modem Configuration
 
