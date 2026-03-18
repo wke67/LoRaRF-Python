@@ -57,8 +57,8 @@ To work with the library, first you must import `SX126x` or `SX127x` depending L
 ```python
 from LoRaRF import LoRaSpi, LoRaGpio
 spi = LoRaSpi(1, 0)    # /dev/spidev1.0
-cs = LoRaGpio(1, 8)    # /dev/gpiochp1 line #8
-reset = LoRaGpio(1, 2) # /dev/gpiochp1 line #2
+cs = LoRaGpio(1, 8)    # /dev/gpiochip1 line #8
+reset = LoRaGpio(1, 2) # /dev/gpiochip1 line #2
 ...
 
 # for SX126x series or LLCC68
