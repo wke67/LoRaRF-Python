@@ -63,7 +63,8 @@ reset = LoRaGpio(1, 2) # /dev/gpiochip1 line #2
 
 # for SX126x series or LLCC68
 from LoRaRF import SX126x
-LoRa = SX126x(spi, cs, reset, irq: Optional[LoRaGpio]=None, txen: Optional[LoRaGpio]=None, rxen: Optional[LoRaGpio]=None)
+busy = LoRaGpio(1,3)
+LoRa = SX126x(spi, cs, reset, busy, irq: Optional[LoRaGpio]=None, txen: Optional[LoRaGpio]=None, rxen: Optional[LoRaGpio]=None)
 
 # for SX127x series
 from LoRaRF import SX127x
