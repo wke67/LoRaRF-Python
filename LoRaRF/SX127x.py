@@ -709,7 +709,8 @@ class SX127x(BaseLoRa) :
     def snr(self) -> float :
 
         # get signal to noise ratio (SNR) of last incoming package
-        return self.readRegister(self.REG_PKT_SNR_VALUE) / 4.0
+        val =  self.readRegister(self.REG_PKT_SNR_VALUE)
+        return val/4. if val<128 else (val-256)/4.
 
 ### INTERRUPT HANDLER METHODS ###
 
