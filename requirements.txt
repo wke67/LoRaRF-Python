@@ -1,0 +1,4 @@
+# lora_server 
+gpiod==2.4.1
+-e git+https://github.com/wke67/LoRaRF-Python.git@4acfb3f87121ebe1fed07c0384d57719998c1a23#egg=LoRaRF
+spidev==3.8
